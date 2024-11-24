@@ -71,7 +71,7 @@ def threads_day(self):
                 article = article[0]+"：D"
             self.write(article)
 ```
-   *p.s. "：D"此符號的目的是後續讀取檔案時用以切割文章*
+*p.s. "：D"此符號的目的是後續讀取檔案時用以切割文章*
 * 一次叫出所有函式提供此專案的主程式call function
 ```
 def call_day():
