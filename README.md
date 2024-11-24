@@ -10,6 +10,18 @@
 
 ### 每個程式的架構及功能如下
 
+* import套件(requests+bs4用於靜態網頁，selenium用於動態網頁)
+```
+import os
+import requests
+from bs4 import BeautifulSoup
+import undetected_chromedriver as uc
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from datetime import date
+import time
+import re
+```
 * 以class創建driver物件提供後續的function操作
 ```
 class scrapying_month:
