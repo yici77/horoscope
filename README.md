@@ -26,7 +26,7 @@ import re
 ```
 class scrapying_month:
     def __init__(self):
-        uc.Chrome()
+        self.driver = uc.Chrome()
 ```
 * 使用datetime以及re確定文章是當月、當週或當日運勢(以每日為例)
 ```
