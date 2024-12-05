@@ -6,28 +6,27 @@ from selenium.webdriver.common.by import By
 from datetime import date
 import time
 import re
-import tiktoken
-
 
 class scrapying_month:
     def __init__(self):
         self.driver = uc.Chrome()
         self.filename = "month/star_month_text.txt"
-        
+
     def delete_file(self):
         if os.path.exists(self.filename):
-            os.remove(self.filename) 
+            os.remove(self.filename)
 
     def write(self,article):
+        article = article.replace("白羊","牡羊").replace("魔羯","摩羯").replace("天平","天秤")
         with open(self.filename, "a", encoding = "UTF-8") as outputfile:
             return outputfile.write(article)
-        
+
     def threads_soulcats_month(self):
         driver = self.driver
         driver.get("https://www.threads.net/@soul.cats_tarot2017")
         driver.execute_script("window.scrollTo(0, 400);")
         time.sleep(5)
-        
+
         articles_list = driver.find_element(By.CSS_SELECTOR,"div.x1c1b4dv.x13dflua.x11xpdln").find_elements(By.CSS_SELECTOR,"div.x9f619.x1n2onr6.x1ja2u2z")
         article_url = [i.find_element(By.CSS_SELECTOR,'a[href*="/@soul.cats_tarot2017/post/"]').get_attribute("href") for i in articles_list if f"「{date.today().month}月份」" in i.text]
         if article_url:
@@ -40,13 +39,13 @@ class scrapying_month:
             if article_list:
                 article = "\n".join(article_list)+"：D"
                 self.write(article)
-                
+
     def threads_astromatt_month(self):
         driver = self.driver
         driver.get("https://www.threads.net/@astromatt888")
         driver.execute_script("window.scrollTo(0, 400);")
         time.sleep(5)
-        
+
         articles_list = driver.find_element(By.CSS_SELECTOR,"div.x1c1b4dv.x13dflua.x11xpdln").find_elements(By.CSS_SELECTOR,"div.x9f619.x1n2onr6.x1ja2u2z")
         article_url = [i.find_element(By.CSS_SELECTOR,'a[href*="/@astromatt888/post/"]').get_attribute("href") for i in articles_list if f"{date.today().month}月運勢" in i.text]
         if article_url:
@@ -59,7 +58,7 @@ class scrapying_month:
             if article_list:
                 article = "\n".join(article_list)+"：D"
                 self.write(article)
-                
+
     def niunews_month(self):
         driver = self.driver
         driver.get("https://www.niusnews.com/search/new/%E6%98%9F%E5%BA%A7%E9%81%8B%E5%8B%A2")
@@ -76,7 +75,7 @@ class scrapying_month:
                 article = "\n".join(article).split("關於星座專家")[0].strip("\n")+"：D"
                 self.write(article)
                 break
-    
+
     def elle_month(self):
         url = "https://www.elle.com/tw/lovelife/horoscopes/"
         headers = {"user-agent":
@@ -84,7 +83,7 @@ class scrapying_month:
         }
         resp = requests.get(url, headers = headers)
         soup = BeautifulSoup(resp.text, "html.parser")
-        
+
         links = soup.find_all("a","ee4ms352")
         links = [i.get("href") for i in links if date.today().strftime("%B").lower() in i.get("href")]
         article_list = []
@@ -98,11 +97,11 @@ class scrapying_month:
                 article_list.append("\n".join(article))
                 if len(article_list) == 4:
                     article = "\n".join(article_list).strip("\n")+"：D"
-                    self.write(article) 
+                    self.write(article)
             if "sophiasastrology" in link:
                 article = "\n".join(article).strip("\n")+"：D"
                 self.write(article)
-    
+
     def tang_month(self):
         url = f"https://www.tatlerasia.com/lifestyle/wellbeing/jesse-tang-horoscope-{date.today().strftime("%B").lower()}-2024-zh-hant"
         headers = {"user-agent":
@@ -116,7 +115,7 @@ class scrapying_month:
         article = "\n".join(article).strip("\n")
         article = re.sub(r"\n+", "\n", article)+"：D"
         self.write(article)
-                
+
     def stargogo_month(self):
         url = "https://www.stargogo.com/search/label/本月運勢?max-results=80"
         headers = {"user-agent":
@@ -129,7 +128,7 @@ class scrapying_month:
         for title in titles:
             if str(date.today().month)+"月星座運勢" in title.text and "-" not in title.text:
                 links.append(title.find("a").get("href"))
-                
+
         if links:
             for link in links:
                 resp = requests.get(link, headers = headers)
@@ -145,7 +144,7 @@ def call_month():
     call.threads_soulcats_month()
     call.threads_astromatt_month()
     call.niunews_month()
-    call.driver.quit()
+    call.driver.close()
     call.elle_month()
     call.tang_month()
     call.stargogo_month()
