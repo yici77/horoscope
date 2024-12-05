@@ -16,8 +16,8 @@ class scrapying_day:
         self.pattern = rf"(?<!-){month}[\u4e00-\u9fa5/.]{{1}}0?{day}(?!\d)(?!-)"
 
     def delete_file(self):
-        if os.path.exists(self.filename):  # 檢查檔案是否存在
-            os.remove(self.filename)  # 刪除檔案
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
 
     def write(self,article):
         article = article.replace("白羊","牡羊").replace("魔羯","摩羯").replace("天平","天秤")
