@@ -25,8 +25,8 @@ class scrapying_week:
 
     def write(self,article):
         article = article.replace("白羊","牡羊").replace("魔羯","摩羯").replace("天平","天秤")
-        with open(self.filename, "a", encoding = "UTF-8") as inputfile:
-            return inputfile.write(article)
+        with open(self.filename, "a", encoding = "UTF-8") as outputfile:
+            return outputfile.write(article)
 
     def threads_blaire_week(self):
         driver = self.driver
