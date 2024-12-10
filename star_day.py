@@ -10,46 +10,62 @@ import re
 class scrapying_day:
     def __init__(self):
         self.driver = uc.Chrome()
-        self.filename = "day/star_day_text.txt"
+        path = os.path.dirname(os.path.abspath(__file__))
+        self.filename = os.path.join(path,"day","star_day_text.txt")
         month = datetime.today().month
         day = datetime.today().day
         self.pattern = rf"(?<!-){month}[\u4e00-\u9fa5/.]{{1}}0?{day}(?!\d)(?!-)"
 
     def delete_file(self):
-        if os.path.exists(self.filename):
-            os.remove(self.filename)
+        if os.path.exists(self.filename): 
+            os.remove(self.filename) 
 
     def write(self,article):
         article = article.replace("白羊","牡羊").replace("魔羯","摩羯").replace("天平","天秤")
         with open(self.filename, "a", encoding = "UTF-8") as outputfile:
             return outputfile.write(article)
-
+        
     def threads_day(self):
-        userid_list = ["astrologer.patrick","riman.xs.zaia","miraclealpaca_tarot","macaumdd","astro_crystal2020"]
+        userid_list = ["riman.xs.zaia","macaumdd","astro_crystal2020"]
         driver = self.driver
         for userid in userid_list:
             driver.get(f"https://www.threads.net/@{userid}")
             driver.execute_script("window.scrollTo(0, 300);")
             time.sleep(5)
-
+            
             articles_list = driver.find_element(By.CSS_SELECTOR,"div.x1c1b4dv.x13dflua.x11xpdln").find_elements(By.CSS_SELECTOR, "div.x9f619.x1n2onr6.x1ja2u2z")
-            article_url = [i.find_element(By.CSS_SELECTOR,f'a[href*="/@{userid}/post/"]') for i in articles_list if re.search(self.pattern,i.text)]
+            article_url = [i.find_element(By.CSS_SELECTOR,f'a[href*="/@{userid}/post/"]')
+                           for i in articles_list if (re.search(self.pattern,i.text) and "星座" in i.text)]
             if article_url:
                 driver.get(f"{article_url[0].get_attribute("href")}")
                 time.sleep(3)
-
+                
                 article_list = driver.find_elements(By.CLASS_NAME,"x1a6qonq")[0:3]
                 article = [i.text for i in article_list]
                 if "留言" in article[0]:
-                    if "留言" in article[2]:
-                        article.pop(2)
-                        article = "\n".join(article)+"：D"
-                    else:
-                        article = "\n".join(article)+"：D"
+                    article = "\n".join(article)+"：D"
                 else:
                     article = article[0]+"：D"
                 self.write(article)
                 
+    def threads_miraclealpaca_day(self):
+        driver = self.driver
+        driver.get("https://www.threads.net/@miraclealpaca_tarot")
+        driver.execute_script("window.scrollTo(0, 300);")
+        time.sleep(5)
+        
+        articles_list = driver.find_element(By.CSS_SELECTOR,"div.x1c1b4dv.x13dflua.x11xpdln").find_elements(By.CSS_SELECTOR, "div.x9f619.x1n2onr6.x1ja2u2z")
+        article_url = [i.find_element(By.CSS_SELECTOR,'a[href*="/@miraclealpaca_tarot/post/"]')
+                       for i in articles_list if (re.search(self.pattern,i.text) and "星座" in i.text)]
+        if article_url:
+            driver.get(f"{article_url[0].get_attribute("href")}")
+            time.sleep(3)
+            
+            article_list = driver.find_elements(By.CLASS_NAME,"x1a6qonq")[0:2]
+            article = [i.text for i in article_list]
+            article = "\n".join(article)+"：D"
+            self.write(article)
+    
     def threads_dadatarot_day(self):
         driver = self.driver
         driver.get("https://www.threads.net/@dada_tarot1325")
@@ -57,37 +73,19 @@ class scrapying_day:
         time.sleep(5)
         
         articles_list = driver.find_element(By.CSS_SELECTOR,"div.x1c1b4dv.x13dflua.x11xpdln").find_elements(By.CSS_SELECTOR, "div.x9f619.x1n2onr6.x1ja2u2z")
-        article_url = [i.find_element(By.CSS_SELECTOR,'a[href*="/@dada_tarot1325/post/"]').get_attribute("href") for i in articles_list if re.search(self.pattern,i.text)]
-        
+        article_url = [i.find_element(By.CSS_SELECTOR,'a[href*="/@dada_tarot1325/post/"]').get_attribute("href")
+                       for i in articles_list if (re.search(self.pattern,i.text) and "星座" in i.text)]
         if article_url:
-            articles = []
+            article = []
             for url in article_url:
                 driver.get(url)
                 time.sleep(3)
-                article = driver.find_element(By.CLASS_NAME,"x1a6qonq").text
-                articles.append(article)
-            if articles:
-                article = "\n".join(articles).strip("\n")+"：D"
-                self.write(article)
                 
-    def threads_catherine_day(self):
-        driver = self.driver
-        driver.get("https://www.threads.net/@catherine1688868")
-        driver.execute_script("window.scrollTo(0, 300);")
-        time.sleep(5)
-        
-        articles_list = driver.find_element(By.CSS_SELECTOR,"div.x1c1b4dv.x13dflua.x11xpdln").find_elements(By.CSS_SELECTOR, "div.x9f619.x1n2onr6.x1ja2u2z")
-        article_url = [i.find_element(By.CSS_SELECTOR,'a[href*="/@catherine1688868/post/"]') for i in articles_list if re.search(self.pattern,i.text)]
-        if article_url:
-            driver.get(f"{article_url[0].get_attribute("href")}")
-            time.sleep(3)
-
-            article_list = driver.find_elements(By.CLASS_NAME,"x1a6qonq")[0:3]
-            article = [i.text for i in article_list]
-            if "星座" in article[0]:
-                article = "\n".join(article).strip("\n") + "：D"
-                self.write(article)
-                
+                articles = driver.find_element(By.CLASS_NAME,"x1a6qonq").text
+                article.append(articles)
+            if article:
+                self.write("\n".join(article)+"：D")
+       
     def linetoday_culture_day(self):
         driver = self.driver
         driver.get("https://today.line.me/tw/v2/publisher/101243")
@@ -124,6 +122,7 @@ class scrapying_day:
     def linetoday_sofia_day(self):
         driver = self.driver
         driver.get("https://today.line.me/tw/v3/publisher/101366")
+        driver.execute_script("window.scrollTo(0, 400);")
         time.sleep(5)
         articles = driver.find_elements(By.CSS_SELECTOR,'a[href*="/tw/v2/article/"]')
         links = []
@@ -197,18 +196,20 @@ class scrapying_day:
                 time.sleep(2)
 
 def call_day():
+    def call_day():
     call = scrapying_day()
     call.delete_file()
-    call.threads_day()
+    call.threads_day()  
+    call.threads_miraclealpaca_day()
     call.threads_dadatarot_day()
-    call.threads_catherine_day()
     call.linetoday_culture_day()
     call.linetoday_meng_day()
     call.linetoday_sofia_day()
-    call.niunews_day()
+    call.niunews_day()       
     call.driver.close()
     call.techpurple_day()
-    call.stargogo_day()
+    call.stargogo_day()        
+    print("day完成爬蟲")
 
 if __name__ == "__main__":
     call_day()
