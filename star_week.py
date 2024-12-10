@@ -10,7 +10,8 @@ import re
 class scrapying_week:
     def __init__(self):
         self.driver = uc.Chrome()
-        self.filename = "week/star_week_text.txt"
+        path = os.path.dirname(os.path.abspath(__file__))
+        self.filename = os.path.join(path,"week","star_week_text.txt")
         monday = date.today() - timedelta(days=date.today().weekday())
         self.month1 = monday.month
         self.month2 = (monday-timedelta(days=1)).month
@@ -20,8 +21,8 @@ class scrapying_week:
         self.pattern2 = rf"(?<![-～]){self.month2}[\u4e00-\u9fa5/.]{{1}}0?{self.day2}(?!\d)"
 
     def delete_file(self):
-        if os.path.exists(self.filename):
-            os.remove(self.filename) 
+        if os.path.exists(self.filename):  # 檢查檔案是否存在
+            os.remove(self.filename)  # 刪除檔案
 
     def write(self,article):
         article = article.replace("白羊","牡羊").replace("魔羯","摩羯").replace("天平","天秤")
@@ -38,8 +39,10 @@ class scrapying_week:
         time.sleep(5)
         articles_list += driver.find_element(By.CSS_SELECTOR,"div.x1c1b4dv.x13dflua.x11xpdln").find_elements(By.CSS_SELECTOR,"div.x9f619.x1n2onr6.x1ja2u2z")
 
-        article_url = [i.find_element(By.CSS_SELECTOR,'a[href*="/@blaire___0/post/"]').get_attribute("href") for i in articles_list
-                       if (re.search(self.pattern1,i.text) or re.search(self.pattern2,i.text)) and "星座運勢" in i.text and "唐綺陽" not in i.text]
+        article_url = [i.find_element(By.CSS_SELECTOR,'a[href*="/@blaire___0/post/"]').get_attribute("href") 
+                       for i in articles_list
+                       if (re.search(self.pattern1,i.text) or re.search(self.pattern2,i.text)) 
+                       and "星座運勢" in i.text and "唐綺陽" not in i.text]
         article_url = list(set(article_url))
 
         if article_url:
@@ -48,7 +51,6 @@ class scrapying_week:
                 time.sleep(3)
                 article = driver.find_element(By.CLASS_NAME,"x1a6qonq").text+"：D"
                 self.write(article)
-
 
     def threads_singingbb_week(self):
         driver = self.driver
@@ -120,10 +122,11 @@ class scrapying_week:
             article = driver.find_elements(By.CLASS_NAME,"body__inner-container")
             article = [i.text for i in article]
             article = "\n".join(article).split("繼續閱讀")[0].split("相關文章")[0]+"：D"
+            article = re.sub(r"WATCH.+Vogue Taiwan","",article,flags=re.DOTALL)
             self.write(article)
 
     def ptt_week(self):
-        url = "https://www.ptt.cc/bbs/Zastrology/index1515.html"
+        url = "https://www.ptt.cc/bbs/Zastrology/index.html"
         headers = {"user-agent":
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
         }
@@ -139,7 +142,8 @@ class scrapying_week:
                 resp = requests.get(link, headers = headers)
                 soup = BeautifulSoup(resp.text, "html.parser")
                 article = soup.find(id="main-content").text
-                article = article.split("※ 發信站")[0]+"：D"
+                article = article.split(re.findall(r"--[^-]+--\n※ 發信站|--\n※ 發信站",article,flags=re.DOTALL)[0])[0]
+                article = re.sub(r"\n+","\n",article)+"：D"
                 self.write(article)
 
     def stargogo_week(self):
@@ -175,6 +179,7 @@ def call_week():
     call.driver.close()
     call.ptt_week()
     call.stargogo_week()
+    print("week完成爬蟲")
 
 if __name__ == "__main__":
     call_week()
