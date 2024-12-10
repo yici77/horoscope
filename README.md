@@ -85,9 +85,7 @@ def call_day():
     def call_day():
     call = scrapying_day()
     call.delete_file()
-    call.threads_day()  
-    call.threads_miraclealpaca_day()
-    call.threads_dadatarot_day()
+    call.threads_day()
     call.linetoday_culture_day()
     call.linetoday_meng_day()
     call.linetoday_sofia_day()
@@ -96,6 +94,9 @@ def call_day():
     call.techpurple_day()
     call.stargogo_day()        
     print("day完成爬蟲")
+
+if __name__ == "__main__":
+    call_month()
 ```
 
 * 所有爬蟲得到的文章會寫進txt檔，以便後續進行分析
