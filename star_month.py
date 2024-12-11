@@ -49,7 +49,8 @@ class scrapying_month:
         time.sleep(5)
 
         articles_list = driver.find_element(By.CSS_SELECTOR,"div.x1c1b4dv.x13dflua.x11xpdln").find_elements(By.CSS_SELECTOR,"div.x9f619.x1n2onr6.x1ja2u2z")
-        article_url = [i.find_element(By.CSS_SELECTOR,'a[href*="/@astromatt888/post/"]').get_attribute("href") for i in articles_list if f"{date.today().month}月運勢" in i.text]
+        article_url = [i.find_element(By.CSS_SELECTOR,'a[href*="/@astromatt888/post/"]').get_attribute("href") 
+                       for i in articles_list if f"{date.today().month}月運勢" in i.text]
         if article_url:
             article_list = []
             for url in article_url:
@@ -73,8 +74,7 @@ class scrapying_month:
                 link = title.get_attribute("href")
                 driver.get(link)
                 article = driver.find_element(By.CLASS_NAME,"post-content.main-content").find_elements(By.TAG_NAME,"p")
-                article = [i.text for i in article]
-                article = "\n".join(article).split("✿ 個人網站 ✿")[0].strip("\n")+"：D"
+                article = "\n".join(i.text for i in article).split("✿ 個人網站 ✿")[0].strip("\n")+"：D"
                 self.write(article)
                 break
 
