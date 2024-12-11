@@ -62,8 +62,7 @@ class scrapying_day:
             time.sleep(3)
             
             article_list = driver.find_elements(By.CLASS_NAME,"x1a6qonq")[0:2]
-            article = [i.text for i in article_list]
-            article = "\n".join(article)+"：D"
+            article = "\n".join(i.text for i in article_list)+"：D"
             self.write(article)
     
     def threads_dadatarot_day(self):
@@ -155,8 +154,7 @@ class scrapying_day:
                 link = title.get_attribute("href")
                 driver.get(link)
                 article = driver.find_element(By.CLASS_NAME,"post-content.main-content").find_elements(By.TAG_NAME,"p")
-                article = [i.text for i in article]
-                article = "\n".join(article).split("關於星座專家")[0].strip("\n")+"：D"
+                article = "\n".join(i.text for i in article).split("關於星座專家")[0].strip("\n")+"：D"
                 self.write(article)
                 break
 
