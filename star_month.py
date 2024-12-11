@@ -79,17 +79,14 @@ class scrapying_month:
                 break
 
     def tang_month(self):
-        url = f"https://www.tatlerasia.com/lifestyle/wellbeing/jesse-tang-horoscope-{date.today().strftime("%B").lower()}-2024-zh-hant"
-        headers = {"user-agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
-        }
-        resp = requests.get(url, headers = headers)
-        soup = BeautifulSoup(resp.text, "html.parser")
-        article = soup.find("div","article-container").text.split("繼續閱讀")[0].split("稿重點整理。")[1]
+        driver = self.driver
+        driver.get(f"https://www.tatlerasia.com/lifestyle/wellbeing/jesse-tang-horoscope-{date.today().strftime("%B").lower()}-{date.today().year}-zh-hant")
+        
+        article = driver.find_element(By.CLASS_NAME, "article-container").text.split("繼續閱讀")[0].split("稿重點整理。")[1]
         article = re.sub(r"\s|1 / 1|[a-zA-Z ]+", "\n", article)+"：D"
-        article = re.sub("\n+", "\n", article)
+        article = re.sub(r"\n+|\s+", "\n", article)
         self.write(article)
-
+        
     def elle_month(self):
         url = "https://www.elle.com/tw/lovelife/horoscopes/"
         headers = {"user-agent":
@@ -147,8 +144,8 @@ def call_month():
     call.threads_soulcats_month()
     call.threads_astromatt_month()
     call.niunews_month()
+    call.tang_month()
     call.driver.close()
-    call.tang_month()    
     call.elle_month()
     call.stargogo_month()
     print("month完成爬蟲")
