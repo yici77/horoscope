@@ -41,7 +41,7 @@ class scrapying_week:
 
         article_url = [i.find_element(By.CSS_SELECTOR,'a[href*="/@blaire___0/post/"]').get_attribute("href") 
                        for i in articles_list
-                       if (re.search(self.pattern1,i.text) or re.search(self.pattern2,i.text)) 
+                       if re.search(f"{self.pattern1}|{self.pattern2}",i.text) 
                        and "星座運勢" in i.text and "唐綺陽" not in i.text]
         article_url = list(set(article_url))
 
@@ -59,7 +59,8 @@ class scrapying_week:
         time.sleep(5)
 
         articles_list = driver.find_element(By.CSS_SELECTOR,"div.x1c1b4dv.x13dflua.x11xpdln").find_elements(By.CSS_SELECTOR,"div.x9f619.x1n2onr6.x1ja2u2z")
-        article_url = [i.find_element(By.CSS_SELECTOR,'a[href*="/@singingbb___/post/"]').get_attribute("href") for i in articles_list if re.search(self.pattern1,i.text)]
+        article_url = [i.find_element(By.CSS_SELECTOR,'a[href*="/@singingbb___/post/"]').get_attribute("href") 
+                       for i in articles_list if re.search(self.pattern1,i.text)]
         if article_url:
             article_list = []
             for url in article_url:
@@ -67,8 +68,7 @@ class scrapying_week:
                 time.sleep(3)
 
                 article = driver.find_elements(By.CLASS_NAME,"x1a6qonq")[0:3]
-                article = [i.text for i in article]
-                article_list.append("\n".join(article).strip("\n"))
+                article_list.append("\n".join(i.text for i in article).strip("\n"))
             if article_list:
                 article = "\n".join(article_list)+"：D"
                 self.write(article)
@@ -80,13 +80,14 @@ class scrapying_week:
         time.sleep(5)
 
         articles_list = driver.find_element(By.CSS_SELECTOR,"div.x1c1b4dv.x13dflua.x11xpdln").find_elements(By.CSS_SELECTOR,"div.x9f619.x1n2onr6.x1ja2u2z")
-        article_url = [i.find_element(By.CSS_SELECTOR,'a[href*="/@tarot_from_heart/post/"]').get_attribute("href") for i in articles_list if re.search(self.pattern1,i.text)]
+        article_url = [i.find_element(By.CSS_SELECTOR,'a[href*="/@tarot_from_heart/post/"]').get_attribute("href") 
+                       for i in articles_list if re.search(self.pattern1,i.text)]
         if article_url:
             for url in article_url:
                 driver.get(url)
                 time.sleep(3)
                 article = driver.find_elements(By.CLASS_NAME,"x1a6qonq")[0:3]
-                article = "\n".join([i.text for i in article])+"：D"
+                article = "\n".join(i.text for i in article)+"：D"
                 self.write(article)
 
     def threads_yusitaluo_week(self):
@@ -96,7 +97,8 @@ class scrapying_week:
         time.sleep(5)
 
         articles_list = driver.find_element(By.CSS_SELECTOR,"div.x1c1b4dv.x13dflua.x11xpdln").find_elements(By.CSS_SELECTOR,"div.x9f619.x1n2onr6.x1ja2u2z")
-        article_url = [i.find_element(By.CSS_SELECTOR,'a[href*="/@yusitaluo/post/"]').get_attribute("href") for i in articles_list if re.search(self.pattern2,i.text)]
+        article_url = [i.find_element(By.CSS_SELECTOR,'a[href*="/@yusitaluo/post/"]').get_attribute("href") 
+                       for i in articles_list if re.search(self.pattern2,i.text)]
         if article_url:
             article_list = []
             for url in article_url:
@@ -120,8 +122,7 @@ class scrapying_week:
             time.sleep(5)
 
             article = driver.find_elements(By.CLASS_NAME,"body__inner-container")
-            article = [i.text for i in article]
-            article = "\n".join(article).split("繼續閱讀")[0].split("相關文章")[0]+"：D"
+            article = "\n".join(i.text for i in article).split("繼續閱讀")[0].split("相關文章")[0]+"：D"
             article = re.sub(r"WATCH.+Vogue Taiwan","",article,flags=re.DOTALL)
             self.write(article)
 
@@ -135,7 +136,7 @@ class scrapying_week:
         titles = soup.find_all("div","title")
         links = []
         for title in titles:
-            if re.search(self.pattern1,title.text) or re.search(self.pattern2,title.text):
+            if re.search(f"{self.pattern1}|{self.pattern2}",title.text):
                 links.append("https://www.ptt.cc"+title.find("a").get("href"))
         if links:
             for link in links:
@@ -156,13 +157,13 @@ class scrapying_week:
         titles = soup.find_all("h2","post-title entry-title")
         links = []
         for title in titles[0:15]:
-            if re.search(self.pattern1,title.text) or re.search(self.pattern2,title.text):
+            if re.search(f"{self.pattern1}|{self.pattern2}",title.text):
                 links.append(title.find("a").get("href"))
         if links:
             for link in links:
                 resp = requests.get(link, headers = headers)
                 soup = BeautifulSoup(resp.text, "html.parser")
-                article = soup.find("div","post-body entry-content").text.split("MBTI")[0]
+                article = soup.find("div","post-body entry-content").text.split("【本週運勢目錄一覽】")[0]
                 article = re.sub(r"\n+", "\n", article)+"：D"
                 self.write(article)
                 time.sleep(2)
