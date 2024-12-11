@@ -190,13 +190,12 @@ class scrapying_day:
             for link in links_list:
                 resp = requests.get(link, headers=headers)
                 soup = BeautifulSoup(resp.text, "html.parser")
-                article = soup.find("div","post-body entry-content").text.split("MBTI")[0].strip("\n\n")
+                article = soup.find("div","post-body entry-content").text.split("今日星座運勢\n【")[0]
                 article = re.sub(r"\n+", "\n", article)+"：D"
                 self.write(article)
                 time.sleep(2)
 
 def call_day():
-    def call_day():
     call = scrapying_day()
     call.delete_file()
     call.threads_day()  
