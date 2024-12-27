@@ -102,7 +102,7 @@ def call_day():
     print("day完成爬蟲")
 
 if __name__ == "__main__":
-    call_month()
+    call_day()
 ```
 
 * 所有爬蟲得到的文章會寫進txt檔，以便後續進行分析
