@@ -88,7 +88,6 @@ def threads_day(self):
 * 一次叫出所有函式提供此專案的主程式call function
 ```python
 def call_day():
-    def call_day():
     call = scrapying_day()
     call.delete_file()
     call.threads_day()
